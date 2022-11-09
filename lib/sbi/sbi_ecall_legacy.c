@@ -117,8 +117,45 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 	return ret;
 }
 
+static int sbi_ecall_legacy_probe(unsigned long extid, unsigned long *outval)
+{
+	switch (extid) {
+	case SBI_EXT_0_1_SET_TIMER:
+		*outval = sbi_timer_get_device() != NULL;
+		break;
+
+	case SBI_EXT_0_1_CONSOLE_PUTCHAR:
+	case SBI_EXT_0_1_CONSOLE_GETCHAR:
+		*outval = sbi_console_get_device() != NULL;
+		break;
+
+	case SBI_EXT_0_1_CLEAR_IPI:
+		*outval = 1;
+		break;
+
+	case SBI_EXT_0_1_SEND_IPI:
+	case SBI_EXT_0_1_REMOTE_FENCE_I:
+	case SBI_EXT_0_1_REMOTE_SFENCE_VMA:
+	case SBI_EXT_0_1_REMOTE_SFENCE_VMA_ASID:
+		*outval = sbi_ipi_get_device() != NULL;
+		break;
+
+	case SBI_EXT_0_1_SHUTDOWN:
+		*outval =
+			sbi_system_reset_supported(SBI_SRST_RESET_TYPE_SHUTDOWN,
+						   SBI_SRST_RESET_REASON_NONE);
+		break;
+
+	default:
+		*outval = 0;
+	};
+
+	return 0;
+}
+
 struct sbi_ecall_extension ecall_legacy = {
 	.extid_start = SBI_EXT_0_1_SET_TIMER,
 	.extid_end = SBI_EXT_0_1_SHUTDOWN,
 	.handle = sbi_ecall_legacy_handler,
+	.probe = sbi_ecall_legacy_probe,
 };
