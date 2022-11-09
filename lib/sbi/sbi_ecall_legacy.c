@@ -60,12 +60,6 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 		sbi_timer_event_start((u64)regs->a0);
 #endif
 		break;
-	case SBI_EXT_0_1_CONSOLE_PUTCHAR:
-		sbi_putc(regs->a0);
-		break;
-	case SBI_EXT_0_1_CONSOLE_GETCHAR:
-		ret = sbi_getc();
-		break;
 	case SBI_EXT_0_1_CLEAR_IPI:
 		sbi_ipi_clear_smode();
 		break;
@@ -122,11 +116,6 @@ static int sbi_ecall_legacy_probe(unsigned long extid, unsigned long *outval)
 	switch (extid) {
 	case SBI_EXT_0_1_SET_TIMER:
 		*outval = sbi_timer_get_device() != NULL;
-		break;
-
-	case SBI_EXT_0_1_CONSOLE_PUTCHAR:
-	case SBI_EXT_0_1_CONSOLE_GETCHAR:
-		*outval = sbi_console_get_device() != NULL;
 		break;
 
 	case SBI_EXT_0_1_CLEAR_IPI:

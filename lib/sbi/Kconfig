@@ -26,8 +26,12 @@ config SBI_ECALL_PMU
 	bool "Performance Monitoring Unit extension"
 	default y
 
+config SBI_ECALL_CONSOLE
+	bool "SBI v0.1 legacy console extension"
+	default y
+
 config SBI_ECALL_LEGACY
-	bool "SBI v0.1 legacy extensions"
+	bool "SBI v0.1 legacy extensions (except console)"
 	default y
 
 config SBI_ECALL_VENDOR

@@ -37,6 +37,10 @@ libsbi-objs-$(CONFIG_SBI_ECALL_SRST) += sbi_ecall_srst.o
 carray-sbi_ecall_exts-$(CONFIG_SBI_ECALL_PMU) += ecall_pmu
 libsbi-objs-$(CONFIG_SBI_ECALL_PMU) += sbi_ecall_pmu.o
 
+# This entry comes before ecall_legacy so it overrides when searching
+carray-sbi_ecall_exts-$(CONFIG_SBI_ECALL_CONSOLE) += ecall_console
+libsbi-objs-$(CONFIG_SBI_ECALL_CONSOLE) += sbi_ecall_console.o
+
 carray-sbi_ecall_exts-$(CONFIG_SBI_ECALL_LEGACY) += ecall_legacy
 libsbi-objs-$(CONFIG_SBI_ECALL_LEGACY) += sbi_ecall_legacy.o
 
