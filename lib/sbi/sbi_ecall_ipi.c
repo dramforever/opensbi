@@ -29,8 +29,17 @@ static int sbi_ecall_ipi_handler(unsigned long extid, unsigned long funcid,
 	return ret;
 }
 
+static int sbi_ecall_ipi_probe(unsigned long extid, unsigned long *outval)
+{
+	unsigned long has_ipi_device = sbi_ipi_get_device() != NULL;
+
+	*outval = has_ipi_device;
+	return 0;
+}
+
 struct sbi_ecall_extension ecall_ipi = {
 	.extid_start = SBI_EXT_IPI,
 	.extid_end = SBI_EXT_IPI,
 	.handle = sbi_ecall_ipi_handler,
+	.probe = sbi_ecall_ipi_probe
 };

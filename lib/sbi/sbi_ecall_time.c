@@ -33,8 +33,17 @@ static int sbi_ecall_time_handler(unsigned long extid, unsigned long funcid,
 	return ret;
 }
 
+static int sbi_ecall_time_probe(unsigned long extid, unsigned long *outval)
+{
+	unsigned long has_timer_device = sbi_timer_get_device() != NULL;
+
+	*outval = has_timer_device;
+	return 0;
+}
+
 struct sbi_ecall_extension ecall_time = {
 	.extid_start = SBI_EXT_TIME,
 	.extid_end = SBI_EXT_TIME,
 	.handle = sbi_ecall_time_handler,
+	.probe = sbi_ecall_time_probe,
 };

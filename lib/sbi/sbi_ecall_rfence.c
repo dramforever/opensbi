@@ -13,6 +13,7 @@
 #include <sbi/sbi_ecall.h>
 #include <sbi/sbi_ecall_interface.h>
 #include <sbi/sbi_trap.h>
+#include <sbi/sbi_ipi.h>
 #include <sbi/sbi_tlb.h>
 
 static int sbi_ecall_rfence_handler(unsigned long extid, unsigned long funcid,
@@ -79,8 +80,19 @@ static int sbi_ecall_rfence_handler(unsigned long extid, unsigned long funcid,
 	return ret;
 }
 
+static int sbi_ecall_rfence_probe(unsigned long extid, unsigned long *outval)
+{
+	/* RFENCE extension is implemented with IPI, so require IPI device */
+
+	unsigned long has_ipi_device = sbi_ipi_get_device() != NULL;
+
+	*outval = has_ipi_device;
+	return 0;
+}
+
 struct sbi_ecall_extension ecall_rfence = {
 	.extid_start = SBI_EXT_RFENCE,
 	.extid_end = SBI_EXT_RFENCE,
 	.handle = sbi_ecall_rfence_handler,
+	.probe = sbi_ecall_rfence_probe,
 };
