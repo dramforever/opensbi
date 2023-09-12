@@ -167,6 +167,12 @@ endif
 # Check whether the linker supports creating PIEs
 OPENSBI_LD_PIE := $(shell $(CC) $(CLANG_TARGET) $(RELAX_FLAG) $(USE_LD_FLAG) -fPIE -nostdlib -Wl,-pie -x c /dev/null -o /dev/null >/dev/null 2>&1 && echo y || echo n)
 
+# Check whether the linker supports generating RELR relocations with --pack-dyn-relocs=relr
+OPENSBI_LD_PACK_DYN_RELOCS := $(shell $(CC) $(CLANG_TARGET) $(RELAX_FLAG) $(USE_LD_FLAG) -nostdlib -Wl,--pack-dyn-relocs=relr -x c /dev/null -o /dev/null 2>&1 | grep -e "pack-dyn-relocs" >/dev/null && echo n || echo y)
+
+# Check whether the linker supports generating RELR relocations with -z pack-relative-relocs
+OPENSBI_LD_Z_PACK_RELATIVE_RELOCS := $(shell $(CC) $(CLANG_TARGET) $(RELAX_FLAG) $(USE_LD_FLAG) -nostdlib -Wl,-z,pack-relative-relocs -x c /dev/null -o /dev/null 2>&1 | grep -e "pack-relative-relocs" >/dev/null && echo n || echo y)
+
 # Check whether the compiler supports -m(no-)save-restore
 CC_SUPPORT_SAVE_RESTORE := $(shell $(CC) $(CLANG_TARGET) $(RELAX_FLAG) -nostdlib -mno-save-restore -x c /dev/null -o /dev/null 2>&1 | grep -e "-save-restore" >/dev/null && echo n || echo y)
 

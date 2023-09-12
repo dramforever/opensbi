@@ -46,6 +46,12 @@
 		PROVIDE(__rel_dyn_end = .);
 	}
 
+	.relr.dyn : {
+		PROVIDE(__relr_dyn_start = .);
+		*(.relr*)
+		PROVIDE(__relr_dyn_end = .);
+	}
+
 	PROVIDE(_rodata_end = .);
 
 	/* End of the read-only data sections */

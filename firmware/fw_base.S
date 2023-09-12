@@ -76,6 +76,60 @@ _try_lottery:
 	sub	t2, t1, t0
 	lla	t3, _runtime_offset
 	REG_S	t2, (t3)
+
+	/*
+	 * RELR is a new packed format for R_*_RELATIVE relocations, saving
+	 * large amount of space over RELA.
+	 *
+	 * See: https://groups.google.com/g/generic-abi/c/bX460iggiKg/m/YT2RrjpMAwAJ
+	 */
+_relocate_relr:
+	/* Handle .relr.* relocations */
+	lla	t0, __relr_dyn_start
+	lla	t1, __relr_dyn_end
+	beq	t0, t1, _relocate_rela
+
+	/* t3 holds the next runtime address to relocate */
+	li	t3, -1
+2:
+	REG_L	t5, (t0)
+	andi	t4, t5, 1		/* check LSB of entry */
+	beqz	t4, 10f
+	/* LSB is 1: entry is a bitmap */
+	mv	t4, t3
+3:
+	srli	t5, t5, 1		/* skip LSB */
+	beqz	t5, 5f			/* zero means we're done */
+	andi	a7, t5, 1
+	beqz	a7, 4f
+	/* Relocate if bit is set in bitmap */
+	REG_L	a7, (t4)
+	add	a7, a7, t2
+	REG_S	a7, (t4)
+4:
+	addi	t4, t4, REGBYTES
+	j	3b
+5:
+	/* Bump next address by (XLEN - 1) words */
+	addi	t3, t3, REGBYTES * (REGBYTES * 8 - 1)
+	addi	t0, t0, REGBYTES
+	blt	t0, t1, 2b
+
+10:
+	/* LSB is 0: entry is an address */
+	/* *(offset + entry) += offset */
+	add	t5, t5, t2
+	REG_L	t4, (t5)
+	add	t4, t4, t2
+	REG_S	t4, (t5)
+
+	/* Set next address to relocate to just after this entry */
+	addi	t3, t5, REGBYTES
+	addi	t0, t0, REGBYTES
+	blt	t0, t1, 2b
+
+_relocate_rela:
+	/* Handle .rela.* relocations */
 	lla	t0, __rel_dyn_start
 	lla	t1, __rel_dyn_end
 	beq	t0, t1, _relocate_done

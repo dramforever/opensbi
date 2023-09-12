@@ -22,6 +22,16 @@ firmware-genflags-y +=	-DFW_PIC
 firmware-asflags-y  +=	-fpic
 firmware-cflags-y   +=	-fPIE -pie
 firmware-ldflags-y  +=	-Wl,--no-dynamic-linker -Wl,-pie
+
+  ifeq ($(FW_PIC_RELR),y)
+    ifeq ($(OPENSBI_LD_Z_PACK_RELATIVE_RELOCS), y)
+      firmware-ldflags-y  +=	-Wl,-z,pack-relative-relocs
+    else ifeq ($(OPENSBI_LD_PACK_DYN_RELOCS), y)
+      firmware-ldflags-y  +=	-Wl,--pack-dyn-relocs=relr
+    else
+      $(error FW_PIC_RELR=y but linker does not support this feature)
+    endif
+  endif
 endif
 
 ifdef FW_TEXT_START
