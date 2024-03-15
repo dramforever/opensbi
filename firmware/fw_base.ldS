@@ -15,6 +15,11 @@
 
 	/* Beginning of the code section */
 
+	.header :
+	{
+		*(.header)
+	}
+
 	.text :
  	{
 		PROVIDE(_text_start = .);

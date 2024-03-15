@@ -8,6 +8,7 @@
  */
 
 #include "fw_base.S"
+#include "fw_header_linux.S"
 
 	.section .entry, "ax", %progbits
 	.align 3

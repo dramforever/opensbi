@@ -1,1 +1,18 @@
 # SPDX-License-Identifier: BSD-2-Clause
+
+menu "Firmware Configuration"
+
+choice FW_HEADER
+	bool "Include Firmware Header"
+	optional
+
+config FW_HEADER_LINUX
+	bool "Linux Kernel Image"
+	help
+	  Compatibility with Linux kernel image header, for fw_jump and fw_payload
+
+	  See: https://www.kernel.org/doc/html/v6.8/arch/riscv/boot-image-header.html
+
+endchoice
+
+endmenu
